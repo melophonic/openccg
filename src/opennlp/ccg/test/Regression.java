@@ -1170,7 +1170,7 @@ public class Regression {
         System.out.println("Avg (std) time 'til best realization: " + avgBest + " (" + stdBest + ")");
         System.out.println("Max time 'til best realization: " + maxBest + " (" + maxBestStr +")");
         System.out.println("Max time 'til new best realization: " + maxNewBest + " (" + maxNewBestStr +")");
-        String avgPacked = nf.format(totalPacked / rCount);
+        String avgPacked = nf.format(rCount > 0 ? totalPacked / rCount : 0);
         System.out.println("Avg time 'til done packing: " + avgPacked);
         System.out.println("Max time 'til done packing: " + maxPacked + " (" + maxPackedStr +")");
         String avgStoppedOrDone = nf.format(allMap.mean());
