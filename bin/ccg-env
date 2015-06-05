@@ -39,8 +39,8 @@ esac
 # variant for use with 'build compile' option, if desired:
 #CP="${OPENCCG_CLASSES}:${OPENCCG_SRC}:${DIRLIBS}"
 JAVA="$JAVA_HOME/bin/java"
-JAVA_MEM="-Xmx256m"
+#JAVA_MEM="-Xmx256m"
 #JAVA_MEM="-Xmx2048m"
 #JAVA_MEM="-Xmx8g"
-#JAVA_MEM="-Xmx16g"
+JAVA_MEM="-Xmx16g"
 JAVA_ARGS="$JAVA_MEM -classpath $CP -Dfile.encoding=UTF8"
