@@ -1,0 +1,306 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+ 	<!-- 
+		Build for the ccgbank grammar to prepare for local parsing/realizing
+		See docs/ccgbank-README for details
+		
+		* Download & extract the pretrained models from ${models.url}
+		* Resolve & extract stanford-nlp core & models from classpath
+		* Update class files in ccgbank/plugins folder
+		* Download & extract kenlm language model (optional, use: -Pkenlm)
+		* Test parse & realize novel text (optional, use: -Ptest-novel)
+ 	 -->
+
+	<artifactId>openccg-ccgbank</artifactId>
+	
+	<parent>
+		<groupId>opennlp.ccg</groupId>
+		<artifactId>openccg-parent</artifactId>
+		<version>0.9.6-SNAPSHOT</version>
+		<relativePath>../parent.pom.xml</relativePath>
+	</parent>
+	
+	<properties>
+		<models.url>http://downloads.sourceforge.net/project/openccg/data/english-models.2013-03-15.tgz</models.url>			
+		<models.tgz>${basedir}/english-models.tgz</models.tgz>
+		<kenlm>gigaword4.5g.kenlm.bin</kenlm>
+		<kenlm.url>http://downloads.sourceforge.net/project/openccg/data/${kenlm}</kenlm.url>
+		<kenlm.bin>${basedir}/models/realizer/${kenlm}</kenlm.bin>
+	</properties>
+
+	<build>
+		<sourceDirectory>${basedir}</sourceDirectory>
+		<resources>
+			<resource>
+				<directory>${basedir}</directory>
+				<includes>
+					<include>bin/**/*</include>
+					<include>original/**/*</include>
+					<include>templates/**/*</include>
+					<include>build-*.*</include>
+					<include>build.*</include>
+				</includes>
+				<excludes>
+					<exclude>**/*.java</exclude>
+					<exclude>**/*.jar</exclude>
+					<exclude>stanford-nlp/**/*</exclude>
+					<exclude>**/${kenlm}</exclude>
+				</excludes>
+			</resource>
+		</resources>
+		<plugins>
+			
+			<plugin>
+			  <groupId>org.apache.maven.plugins</groupId>
+			  <artifactId>maven-compiler-plugin</artifactId>
+			  <configuration>
+			    <includes>
+			      <include>**/plugins/*.java</include>
+			    </includes>
+			  </configuration>
+			</plugin>			
+			
+		</plugins>
+	</build>
+
+
+	<profiles>
+		<profile>
+			<id>download-models</id>
+			<activation>
+				<file>
+					<missing>${basedir}/aux</missing>
+				</file>
+			</activation>
+			<build>
+				<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+
+					<execution>
+						<id>download-models</id>
+						<phase>generate-resources</phase>
+						<configuration>
+							<target>
+								<echo message="Downloading ${models.url}" />
+								<get src="${models.url}" dest="${models.tgz}"/>
+								<untar src="${models.tgz}" dest="${basedir}"
+									compression="gzip" failOnEmptyArchive="true" />
+								<delete file="${models.tgz}"/>
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+
+			</plugin>
+				
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>kenlm</id>
+			<build>
+				<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+
+					<execution>
+						<id>download-kenlm</id>
+						<phase>generate-resources</phase>
+						<configuration>
+							<target>
+								<echo message="Downloading ${kenlm.url}..." />
+								<get src="${kenlm.url}" dest="${kenlm.bin}"/>
+
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+
+			</plugin>
+				
+				</plugins>
+			</build>
+		</profile>
+
+	<profile>
+		<id>setup-stanford-nlp</id>
+			<activation>
+				<file>
+					<missing>${basedir}/stanford-nlp/stanford-core-nlp.jar</missing>
+				</file>
+			</activation>
+		
+		<build>
+			<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>unpack-stanford-core-nlp</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>edu.stanford.nlp</groupId>
+									<artifactId>stanford-corenlp</artifactId>
+									<version>3.5.1</version>
+									<type>jar</type>
+									<overWrite>false</overWrite>
+									<outputDirectory>stanford-nlp</outputDirectory>
+									<destFileName>stanford-core-nlp.jar</destFileName>
+								</artifactItem>
+							</artifactItems>							
+						</configuration>
+					</execution>
+					<execution>
+						<id>unpack-stanford-nlp-classifiers</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>unpack</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>edu.stanford.nlp</groupId>
+									<artifactId>stanford-corenlp</artifactId>
+									<version>3.5.1</version>
+									<classifier>models</classifier>
+									<type>jar</type>
+									<overWrite>false</overWrite>
+				                   <outputDirectory>stanford-nlp/classifiers</outputDirectory>
+				                   <includes>edu/stanford/nlp/models/ner/*</includes>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</execution>					
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>unpack-stanford-nlp-classifiers</id>
+						<phase>process-resources</phase>
+						<configuration>
+							<target>
+								<move todir="stanford-nlp/classifiers">
+									<fileset dir="stanford-nlp/classifiers/edu/stanford/nlp/models/ner" includes="*"/>
+								</move>
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			
+			</plugins>
+		</build>
+	
+	</profile>
+
+
+
+	<profile>
+		<id>test-novel</id>
+		<activation>
+			<activeByDefault>false</activeByDefault>
+		</activation>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-antrun-plugin</artifactId>
+
+					<executions>
+						<execution>
+							<id>parse-realize</id>
+							<phase>test</phase>
+							<configuration>
+								<target>
+									<!-- delete the working dir, leaving it can cover up errors -->
+									<delete dir="${basedir}/data/novel/two-sents.dir"/>
+									<!-- copy the class files into plugins since ccg-build resolves these from these from ccgbank/. -->
+									<copy todir="${basedir}/plugins" overwrite="true">
+										<fileset dir="${project.build.directory}/classes/plugins" includes="*.class"/> 
+									</copy>
+									<echo>java.library.path ${java.library.path}</echo>
+									
+									
+									<echo>Parsing</echo>
+									
+									<exec executable="ccg-build">
+										<arg value="-f" />
+										<arg value="build-ps.xml" />
+										<arg value="test-novel" />
+									</exec>
+									
+									
+									<echo>Realizing</echo>
+									<exec executable="ccg-build" >
+										<arg value="-f" />
+										<arg value="build-rz.xml" />
+										<arg value="test-novel" />
+									</exec>
+								</target>
+							</configuration>
+							<goals>
+								<goal>run</goal>
+							</goals>
+						</execution>
+					</executions>
+					<dependencies>
+						<dependency>
+							<groupId>${project.groupId}</groupId>
+							<artifactId>openccg-ccgbank</artifactId>
+							<version>${project.version}</version>
+						</dependency>
+					</dependencies>
+				</plugin>
+
+			</plugins>
+		</build>
+	</profile>
+	</profiles>
+
+	<dependencies>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>openccg</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>openccg-ner</artifactId>
+		</dependency>	
+		<dependency>
+			<groupId>edu.stanford.nlp</groupId>
+			<artifactId>stanford-corenlp</artifactId>
+		</dependency>	
+		<dependency>
+			<groupId>edu.stanford.nlp</groupId>
+			<artifactId>stanford-corenlp</artifactId>
+			<classifier>models</classifier>
+		</dependency>			
+	</dependencies>
+	
+	
+</project>

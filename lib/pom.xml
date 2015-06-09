@@ -1,0 +1,192 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<!-- 
+		the openccg libs, resolved by maven to ant-friendly local jars 
+	-->
+
+
+	<artifactId>openccg-lib</artifactId>
+	<packaging>pom</packaging>
+
+	<parent>
+		<groupId>opennlp.ccg</groupId>
+		<artifactId>openccg-parent</artifactId>
+		<version>0.9.6-SNAPSHOT</version>
+		<relativePath>../parent.pom.xml</relativePath>
+	</parent>
+
+	<build>
+		<plugins>
+			<!-- unpack dependencies so ant builds will work -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<inherited>false</inherited>
+				<configuration>
+					<outputDirectory>${basedir}</outputDirectory>
+					<overWriteIfNewer>true</overWriteIfNewer>
+				</configuration>
+				<executions>
+					<execution>
+						<id>copy-unversioned-dependencies</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<excludeGroupIds>junit,net.sf.jgrapht</excludeGroupIds>
+							<stripVersion>true</stripVersion>
+						</configuration>
+					</execution>
+					<execution>
+						<id>copy-versioned-dependencies</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<includeGroupIds>junit</includeGroupIds>
+						</configuration>
+					</execution>
+					<execution>
+						<id>copy-specific-dependencies</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>net.sf.jgrapht</groupId>
+									<artifactId>jgrapht</artifactId>
+									<type>jar</type>
+									<destFileName>jgrapht-jdk1.6.jar</destFileName>
+								</artifactItem>
+								<artifactItem>
+									<groupId>net.sf.trove4j</groupId>
+									<artifactId>trove4j</artifactId>
+									<version>2.1.0</version>
+									<destFileName>trove.jar</destFileName>
+								</artifactItem>
+								<!-- 
+								<artifactItem>
+									<groupId>ant-contrib</groupId>
+									<artifactId>ant-contrib</artifactId>
+									<version>1.0b5-SNAPSHOT</version>
+									<destFileName>ant-contrib.jar</destFileName>
+								</artifactItem>
+								 -->
+							</artifactItems>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- 
+				the ant-contrib jar  is...old, and building from source
+				is required to use with newer versions of ant.
+				but it's still old. 
+				
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-scm-plugin</artifactId>
+				<version>1.9.4</version>
+				<executions>
+					<execution>
+						<id>build-ant-contrib</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>bootstrap</goal>
+						</goals>
+						<configuration>
+							<goals>install -Dmaven.javadoc.skip=true</goals>
+							<connectionUrl>scm:git:https://github.com/srstclair/ant-contrib.git</connectionUrl>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			 -->
+			
+			<!-- keeps lib in sync with maven classpath -->
+			<plugin>
+				<artifactId>maven-clean-plugin</artifactId>
+				<version>2.6.1</version>
+				<configuration>
+					<filesets>
+						<fileset>
+							<directory>${basedir}</directory>
+							<includes>
+								<include>*.jar</include>
+							</includes>
+							<followSymlinks>false</followSymlinks>
+						</fileset>
+					</filesets>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jdom</groupId>
+			<artifactId>jdom</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>xalan</groupId>
+			<artifactId>serializer</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>xalan</groupId>
+			<artifactId>xalan</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>xerces</groupId>
+			<artifactId>xercesImpl</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>net.sf.jopt-simple</groupId>
+			<artifactId>jopt-simple</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>jline</groupId>
+			<artifactId>jline</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.jgrapht</groupId>
+			<artifactId>jgrapht</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>javacc</groupId>
+			<artifactId>javacc</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.ant</groupId>
+			<artifactId>ant</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>ant-contrib</groupId>
+			<artifactId>ant-contrib</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>ant</groupId>
+			<artifactId>ant-junit</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.ant</groupId>
+			<artifactId>ant-junit4</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.trove4j</groupId>
+			<artifactId>trove4j</artifactId>
+		</dependency>
+	</dependencies>
+
+</project>
