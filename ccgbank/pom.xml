@@ -25,9 +25,14 @@
 	<properties>
 		<models.url>http://downloads.sourceforge.net/project/openccg/data/english-models.2013-03-15.tgz</models.url>			
 		<models.tgz>${basedir}/english-models.tgz</models.tgz>
+		
 		<kenlm>gigaword4.5g.kenlm.bin</kenlm>
 		<kenlm.url>http://downloads.sourceforge.net/project/openccg/data/${kenlm}</kenlm.url>
 		<kenlm.bin>${basedir}/models/realizer/${kenlm}</kenlm.bin>
+		
+		<berkeleylm>berkeleylm.bin</berkeleylm>
+		<berkeleylm.bin>${basedir}/models/realizer/${berkeleylm}</berkeleylm.bin>
+		
 	</properties>
 
 	<build>
@@ -273,7 +278,7 @@
 							<groupId>${project.groupId}</groupId>
 							<artifactId>openccg-ccgbank</artifactId>
 							<version>${project.version}</version>
-						</dependency>
+						</dependency>						
 					</dependencies>
 				</plugin>
 
@@ -291,6 +296,10 @@
 			<groupId>${project.groupId}</groupId>
 			<artifactId>openccg-ner</artifactId>
 		</dependency>	
+		<dependency>
+			<groupId>edu.berkeley.nlp.lm</groupId>
+			<artifactId>berkleylm</artifactId>
+		</dependency>			
 		<dependency>
 			<groupId>edu.stanford.nlp</groupId>
 			<artifactId>stanford-corenlp</artifactId>

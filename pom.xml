@@ -185,6 +185,10 @@
 			<groupId>net.sf.trove4j</groupId>
 			<artifactId>trove4j</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>edu.berkeley.nlp.lm</groupId>
+			<artifactId>berkleylm</artifactId>
+		</dependency>		
 	</dependencies>	
 
 </project>

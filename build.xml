@@ -49,6 +49,7 @@
       <pathelement location="${lib.dir}/xalan.jar"/>
       <pathelement location="${lib.dir}/xml-apis.jar"/>
       <pathelement location="${lib.dir}/xsltc.jar"/>
+      <pathelement location="${lib.dir}/berkleylm.jar"/>
     </path>
 
     <filter token="year" value="${year}"/>
