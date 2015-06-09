@@ -2,6 +2,7 @@
 *~
 *.jar
 *.so
+*.a
 *.class
 *.pyc
 *.tgz
@@ -9,6 +10,7 @@
 *.lm
 *.3bo
 *.mod
+*.jar
 vocab.*
 !vocab.flm
 .project
@@ -48,10 +50,6 @@ lib/openccg.jar
 output/
 src/ccg2xml/ccg2xml.py
 src/srilmbridge/*.h
-/target/
-/.settings/
-/ccgbank/target/
-/ccgbank/.settings/
-/ccgbank/bin/ner/target/
-/ccgbank/bin/ner/.settings/
-**/*.jar
+.DS_Store
+target
+.settings
